@@ -31,6 +31,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -49,7 +51,6 @@ async def prometheus_middleware(
 
     endpoint = request.url.path
 
-    # Do not count Prometheus scraping itself.
     if endpoint != "/metrics":
         duration = time.perf_counter() - start_time
 

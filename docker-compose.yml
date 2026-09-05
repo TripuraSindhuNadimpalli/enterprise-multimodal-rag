@@ -10,12 +10,26 @@ services:
       - "55433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U postgres -d enterprise_rag"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7
     container_name: enterprise-rag-redis
     ports:
       - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   minio:
     image: minio/minio:latest
@@ -30,6 +44,103 @@ services:
     volumes:
       - minio_data:/data
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enterprise-rag-backend
+    container_name: enterprise-rag-backend
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: enterprise_rag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: enterprise-documents
+      MINIO_SECURE: "false"
+
+      JWT_SECRET_KEY: local-docker-development-secret
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_MINUTES: "60"
+
+      OLLAMA_HOST: http://host.docker.internal:11434
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+
+  worker:
+    image: enterprise-rag-backend
+    container_name: enterprise-rag-worker
+    command: ["python", "-m", "workers.run_worker"]
+
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: enterprise_rag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_BUCKET: enterprise-documents
+      MINIO_SECURE: "false"
+
+      JWT_SECRET_KEY: local-docker-development-secret
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_MINUTES: "60"
+
+      OLLAMA_HOST: http://host.docker.internal:11434
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: enterprise-rag-frontend
+    container_name: enterprise-rag-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
   prometheus:
     image: prom/prometheus:latest
     container_name: enterprise-rag-prometheus
@@ -38,6 +149,8 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
+    depends_on:
+      - backend
 
   grafana:
     image: grafana/grafana:latest
@@ -49,8 +162,10 @@ services:
     depends_on:
       - prometheus
 
+
 volumes:
   postgres_data:
   minio_data:
   prometheus_data:
   grafana_data:
+  huggingface_cache:

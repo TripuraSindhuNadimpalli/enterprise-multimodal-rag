@@ -1,0 +1,47 @@
+# Git
+.git
+.github
+
+# Environment / secrets
+.env
+.env.*
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+.venv
+venv
+
+# Frontend dependencies and build output
+frontend/node_modules
+frontend/dist
+
+# Node
+node_modules
+
+# IDE / macOS
+.vscode
+.idea
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Test / coverage output
+.coverage
+htmlcov
+coverage.xml
+
+node_modules
+dist
+.git
+.gitignore
+Dockerfile
+*.log
+.env
+.env.*
+.DS_Store
