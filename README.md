@@ -588,9 +588,9 @@ Automated testing
 CI/CD
 Production-oriented system design
 
-## Author
+Author
 
-**Tripura Sindhu Nadimpalli**
+Tripura Sindhu Nadimpalli
 
-GitHub:  
+GitHub:
 https://github.com/TripuraSindhuNadimpalli
