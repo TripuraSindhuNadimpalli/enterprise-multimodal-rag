@@ -32,7 +32,15 @@ jobs:
           --health-retries=5
 
     env:
-      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/enterprise_rag
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: enterprise_rag
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+      JWT_SECRET_KEY: github-actions-test-secret
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_MINUTES: "60"
 
     steps:
       - name: Checkout repository
