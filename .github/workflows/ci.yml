@@ -56,6 +56,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Enable pgvector extension
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql \
+            -h localhost \
+            -p 5432 \
+            -U postgres \
+            -d enterprise_rag \
+            -c "CREATE EXTENSION IF NOT EXISTS vector;"
+
       - name: Initialize database
         run: |
           python -m database.init_db
