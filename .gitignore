@@ -1,0 +1,45 @@
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Conda
+.conda/
+
+# Node.js
+node_modules/
+frontend/node_modules/
+
+# Frontend build
+frontend/dist/
+dist/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Coverage
+.coverage
+htmlcov/
+coverage.xml
+
+# Temporary files
+*.tmp
+*.temp
