@@ -29,4 +29,4 @@ COPY workers ./workers
 
 EXPOSE 8000
 
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "python -m database.init_db && uvicorn api.main:app --host 0.0.0.0 --port 8000"]
