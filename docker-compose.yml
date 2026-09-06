@@ -50,6 +50,7 @@ services:
       dockerfile: Dockerfile
     image: enterprise-rag-backend
     container_name: enterprise-rag-backend
+
     environment:
       APP_NAME: ${APP_NAME:-Enterprise Multimodal RAG}
       APP_VERSION: ${APP_VERSION:-0.1.0}
@@ -142,6 +143,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://127.0.0.1:8000}
     image: enterprise-rag-frontend
     container_name: enterprise-rag-frontend
     ports:
