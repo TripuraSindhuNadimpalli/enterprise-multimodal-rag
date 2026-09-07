@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-enterprise_rag}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    ports:
-      - "${POSTGRES_PORT:-55433}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -23,8 +21,6 @@ services:
   redis:
     image: redis:7
     container_name: enterprise-rag-redis
-    ports:
-      - "${REDIS_PORT:-6380}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -38,9 +34,6 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
-    ports:
-      - "9000:9000"
-      - "9001:9001"
     volumes:
       - minio_data:/data
 
@@ -159,8 +152,6 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: enterprise-rag-prometheus
-    ports:
-      - "9091:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -170,8 +161,6 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: enterprise-rag-grafana
-    ports:
-      - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
