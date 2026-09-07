@@ -10,11 +10,13 @@ RUN apt-get update \
         build-essential \
         libpq-dev \
         curl \
+        tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 
-RUN python -m pip install --upgrade pip \
+# Install CPU-only PyTorch to avoid downloading large CUDA packages.
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.13.0 \
     && pip install --no-cache-dir -r requirements.txt
 
 COPY api ./api

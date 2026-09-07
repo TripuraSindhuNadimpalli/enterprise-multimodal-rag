@@ -1,7 +1,7 @@
 from ollama import chat
 
 
-MODEL_NAME = "qwen3:4b"
+MODEL_NAME = "qwen3:0.6b"
 
 
 def generate_answer(prompt: str) -> str:
